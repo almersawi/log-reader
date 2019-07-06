@@ -1,0 +1,25 @@
+<%- include('./partials/head.ejs')%>
+  </head>
+
+  <body>
+    <div class="container">
+
+      <h1>Graduation Project - Suez University 2019</h1>
+      <p class="text-center"><span class="subtitle">logReader 2019</span></p>
+      <div class="custom-container">
+        <h2>Upload the .las file</h2> <br>
+        <form action="/upload-file" method="post" enctype="multipart/form-data">
+          <div class="input-group">
+         <div class="custom-file">
+           <input type="file" class="custom-file-input" id="inputGroupFile01"
+             aria-describedby="inputGroupFileAddon01" name="filename" required class="inputfile">
+           <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+         </div>
+        </div> <br>
+          <input type="submit" value="upload" name="submit" class="btn btn-primary">
+        </form>
+      </div>
+
+    </div>
+
+<%- include('./partials/footer.ejs')%>

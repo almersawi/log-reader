@@ -1,0 +1,207 @@
+<%- include('./partials/head.ejs')%>
+  </head>
+  <body>
+
+    <p class="text-center"><span class="subtitle"><%= header %> Log Display</span></p>
+      <div class="container">
+        <input type="text" name="" value="<%= depthArr %>" id="depthArr" hidden>
+
+        <input type="text" name="" value="<%= headerArr %>" id="headerArr" hidden>
+
+        <input type="text" name="" value="<%= header %>" id="header" hidden>
+        <div class="row">
+          <div class="col-md-6">
+            <div id="Area"></div>
+          </div>
+          <div class="col-md-6" id="plotSetting">
+            <p class="text-center"><button class="btn btn-primary" onclick="printLog()">Print <%= header %></button></p>
+            <hr>
+            <label for="customRange1">Slide to increase vertical resolution</label>
+            <input type="range" class="custom-range" min="1000" max="20000" step="100" id="customRange1" value="3000">
+            <hr>
+            <label for="customRange2">Slide to increase horizontal resolution</label>
+            <input type="range" class="custom-range" min="0.5" max="2.1" step="0.05" id="customRange2" value="1">
+          </div>
+          </div>
+        </div>
+      </div>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<script>
+
+//random Color 
+var randomColor = (function(){
+  var golden_ratio_conjugate = 0.618033988749895;
+  var h = Math.random();
+
+  var hslToRgb = function (h, s, l){
+      var r, g, b;
+
+      if(s == 0){
+          r = g = b = l; // achromatic
+      }else{
+          function hue2rgb(p, q, t){
+              if(t < 0) t += 1;
+              if(t > 1) t -= 1;
+              if(t < 1/6) return p + (q - p) * 6 * t;
+              if(t < 1/2) return q;
+              if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+              return p;
+          }
+
+          var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          var p = 2 * l - q;
+          r = hue2rgb(p, q, h + 1/3);
+          g = hue2rgb(p, q, h);
+          b = hue2rgb(p, q, h - 1/3);
+      }
+
+      return '#'+Math.round(r * 255).toString(16)+Math.round(g * 255).toString(16)+Math.round(b * 255).toString(16);
+  };
+  
+  return function(){
+    h += golden_ratio_conjugate;
+    h %= 1;
+    return hslToRgb(h, 0.5, 0.60);
+  };
+})();
+ function round(value,decimals) {
+      return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+  }
+    var depthArr = document.getElementById('depthArr').value,
+        newDepth = depthArr.split(',');
+    var headerArr = document.getElementById('headerArr').value,
+        header = document.getElementById('header').value,
+        newHeader = headerArr.split(',');
+    var minValDepth = Math.min.apply(Math, newDepth),
+        maxValDepth = Math.max.apply(Math, newDepth),
+        minValHeader = Math.min.apply(Math, newHeader),
+        maxValHeader = Math.max.apply(Math, newHeader);
+
+function plotD(maxW, maxH) {
+  // set the dimensions and margins of the graph
+var margin = {top: 10, right: 40, bottom: 30, left: 30},
+    width = 450 - margin.left - margin.right,
+    height = maxH - margin.top - margin.bottom;
+
+var xdata = newHeader;
+var ydata = newDepth;
+var xdata2 = maxValHeader /2 ;
+
+var xy = []; // start empty, add each element one at a time
+for(var i = 0; i < xdata.length; i++ ) {
+   xy.push({x: xdata[i], y: ydata[i]});
+}
+
+var xy2 = []; // start empty, add each element one at a time
+for(var i = 0; i < ydata.length; i++ ) {
+   xy2.push({x: xdata2, y: ydata[i]});
+}
+
+
+console.log("xy is:", xy);
+var xscl = d3.scaleLinear()
+    .domain([minValHeader, maxW])        
+    .range([0, width]);      
+
+var yscl = d3.scaleLinear()
+    .domain([maxValDepth, minValDepth])        
+    .range([height, 0]);
+    
+var myline = d3.line()
+  .x(function(d) { return xscl(d.x);}) 
+  .y(function(d) { return yscl(d.y);}) 
+
+  var myline2 = d3.line()
+  .x(function(d) { return xscl(d.x);}) 
+  .y(function(d) { return yscl(d.y);}) 
+
+var svg = d3.select("#Area")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  // translate this svg element to leave some margin.
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+svg
+  .append('g')
+  .attr("transform", "translate(0," + 30 + ")")
+  .call(d3.axisLeft(yscl).tickSize(-height*1.1).ticks(100));
+
+svg
+  .append('g')
+  .attr("transform", "translate(0," + 30 + ")")
+  .attr("position", "fixed")
+  .call(d3.axisTop(xscl).tickSize(-height*1.1).ticks(8));
+
+svg.append("path")
+    .attr("class", "line") // attributes given one at a time
+    .attr("d", myline(xy)) // use the value of myline(xy) as the data, 'd'
+    .style("fill", "none")
+    .style("stroke", randomColor)
+    .attr("transform", "translate(0," + 30 + ")")
+    .style("stroke-width", 1.2);
+
+/*
+svg.append("path")
+    .attr("class", "line") // attributes given one at a time
+    .attr("d", myline2(xy2)) // use the value of myline(xy) as the data, 'd'
+    .style("fill", "none")
+    .style("stroke", "#333")
+    .attr("transform", "translate(0," + 30 + ")")
+    .style("stroke-width", 1.2);
+*/
+ svg.selectAll("line").attr("stroke", "#EBEBEB").transition().duration(500);
+
+ svg.append("text")
+    .attr("x", 450/2 )
+    .attr("y", 0)
+    .attr("transform", "translate(0," + 10 + ")")
+    .style("text-anchor", "middle")
+    .text(header);
+}
+
+function printLog () {
+  var restorePage = document.body.innerHTML;
+  var printedDiv = document.getElementById('Area').innerHTML;
+  document.body.innerHTML = printedDiv;
+  window.print();
+  document.body.innerHTML = restorePage;
+}
+
+var customRange1 = document.getElementById('customRange1');
+
+customRange1.onchange = function() {
+  var area = document.getElementById('Area');
+  area.innerHTML = '';
+  var newMaxHeader = maxValHeader / customRange2.value;
+  plotD(newMaxHeader, customRange1.value);
+}
+
+customRange2.onchange = function() {
+  var area = document.getElementById('Area');
+  area.innerHTML = '';
+  var newMaxHeader = maxValHeader / customRange2.value;
+  plotD(newMaxHeader, customRange1.value);
+}
+plotD(maxValHeader,customRange1.value);
+
+//Scroll effect
+window.onscroll = function () {
+  var plotSetting = document.getElementById('plotSetting');
+  'use strict';
+    var posit = document.documentElement.scrollTop;
+    console.log(posit);
+    if (posit >= 75 ) {
+        plotSetting.classList.add('cus-fixed');
+    }
+    else {
+        plotSetting.classList.remove('cus-fixed');
+    }
+
+};
+
+</script>
+
+<%- include('./partials/footer.ejs')%>

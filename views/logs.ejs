@@ -1,0 +1,22 @@
+<%- include('./partials/head.ejs')%>
+  </head>
+  <body>
+
+    <p class="text-center"><span class="subtitle">Choose your log to view or go to <a target="_blank" href="/<%= id %>/multi/plot">multi plot area</a></span></p>
+      <div class="container">
+            <div class="row">
+              <% headers.forEach(function(item){ %>
+              <div class="col-md-3">
+                  <div class="card custom-card">
+                  <div class="card-body">
+                    <h5 class="card-title"><%= item %></h5>
+                    <p class="card-text"><%= headersDesc[item]%></p>
+                    <a class="card-link" href="/<%= fileName %>/<%= item %>" target="_blank">View Log</a>
+                  </div>
+              </div>
+              </div>
+            <% }); %>
+            <div>
+      </div>
+
+<%- include('./partials/footer.ejs')%>

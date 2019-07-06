@@ -1,0 +1,36 @@
+<%- include('./partials/head.ejs')%>
+  </head>
+  <body>
+    <p class="text-center"><span class="subtitle">Multi Plot Area</span></p>
+
+    
+    <input type="text" name="headers" value="<%= headers %>" hidden id="headers">
+    <input type="text" name="depthArr" value="<%= depthArr %>" hidden id="depthArr">
+
+    <%headers.shift()%>
+     <% headers.forEach(header => { %>
+     <input type="text" name="<%= header %>" value="<%= finalData[header] %>" id="<%=header%>" hidden>
+    <% }) %> 
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div id="Area1"></div>
+        </div>
+
+        <div class="col-lg-6" id="plotSetting">
+              <% headers.forEach(header => { %>
+               <div class="custom-control custom-checkbox" onchange="check()">
+               <input type="checkbox" class="custom-control-input" value="<%= header %>" name="checkedHeaders" id="<%= header+'ch' %>" class="checkbox">
+               <label class="custom-control-label" for="<%= header+'ch' %>"><strong><%= header %></strong></label>
+                </div>
+              <% }) %> 
+        </div>  
+      </div>
+    </div>
+
+<!-- JQuery -->
+<script type="text/javascript" src="/bootstrap/js/jquery-3.4.1.min.js"></script>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="/js/multi-plot.js"></script>
+<%- include('./partials/footer.ejs')%>

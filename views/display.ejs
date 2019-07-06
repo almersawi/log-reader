@@ -1,0 +1,101 @@
+<%- include('./partials/head.ejs')%>
+  </head>
+  <body>
+
+    <p class="text-center"><span class="subtitle"><%= header %> Log Display</span></p>
+      <div class="container">
+        <input type="text" name="" value="<%= depthArr %>" id="depthArr" hidden>
+
+        <input type="text" name="" value="<%= headerArr %>" id="headerArr" hidden>
+
+        <input type="text" name="" value="<%= header %>" id="header" hidden>
+        <div class="row">
+          <div class="col-md-6">
+            <div id="myPlot" style="height:5000px"></div>
+          </div>
+          <div class="col-md-6">
+          <div class="control-settings">
+            <label for="customRange1">Adjust the X-axis scale (Slide left to increase resolution)</label>
+                <label id="xaxis-value" class="text-center">1</label>
+                <input type="range" class="custom-range" id="customRange1" min="1" max = '200' value="100">
+
+            <label for="customRange2">Adjust the Y-axis scale (Slide left to increase resolution)</label>
+                <label id="yaxis-value" class="text-center">1</label>
+                <input type="range" class="custom-range" id="customRange2" min="1" max = '600' value="50">
+          </div>
+          </div>
+        </div>
+      </div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+ function round(value,decimals) {
+      return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+  }
+    var depthArr = document.getElementById('depthArr').value,
+        newDepth = depthArr.split(',');
+    var headerArr = document.getElementById('headerArr').value,
+        header = document.getElementById('header').value,
+        newHeader = headerArr.split(',');
+    var minValDepth = Math.min.apply(Math, newDepth),
+        maxValDepth = Math.max.apply(Math, newDepth),
+        minValHeader = Math.min.apply(Math, newHeader),
+        maxValHeader = Math.max.apply(Math, newHeader);
+
+    var trace = {
+        x: newHeader,
+        y: newDepth,
+        mode: 'lines',
+        line: {
+            color: '#333'
+        }
+    }
+
+    var layout = {
+        title: header,
+        autosize: true, 
+        xaxis: {
+            range: [minValHeader, maxValHeader],
+            showgrid: true,
+            showline: true,
+            mirror: 'trick',
+            gridcolor: '#bdbdbd',
+            gridwidth: 1,
+            side: 'top'
+        },
+        yaxis: {
+            range: [maxValDepth, minValDepth],
+            showgrid: true,
+            showline: true,
+            mirror: 'trick',
+            gridcolor:"#bdbdbd",
+            gridwidth: 'top'
+        }
+    }
+
+    var data = [trace];
+    Plotly.newPlot('myPlot', data, layout);
+    
+    var customRange1 = document.getElementById('customRange1');
+    var xaxisVal = document.getElementById('xaxis-value');
+    customRange1.onchange = function () {
+       layout.xaxis.range = [minValHeader,maxValHeader* (customRange1.value/100)];
+       xaxisVal.innerHTML = round(1/(customRange1.value/100), 2);
+       Plotly.newPlot('myPlot', data, layout);
+    }
+
+    var customRange2 = document.getElementById('customRange2');
+    var yaxisVal = document.getElementById('yaxis-value');
+    customRange2.onchange = function () {
+       yaxisVal.innerHTML = round(1 + (customRange2.value/100), 2);
+       var myPlot = document.getElementById('myPlot');
+       myPlot.style.height =  5000 * (1 + customRange2.value/100) + "px";
+        Plotly.newPlot('myPlot', data, layout);
+
+       //myPlot.style.overflowY = 'scroll';
+    }
+
+
+</script>
+
+<%- include('./partials/footer.ejs')%>

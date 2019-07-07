@@ -1,6 +1,7 @@
-# log-reader
-`.cus-fixed-multi {
-    position: fixed;
-    top: 10px;
-    right: 0px;
-  }`
+# logReader
+## Configurations 
+We use Node.js and create server of port: 3000
+`app.listen(3000, ()=> {
+        console.log('Listen to port: 3000');
+    });`
+After connecting to mongoDB, which we use to store our parsing data

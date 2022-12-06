@@ -11,7 +11,7 @@
   "dependencies": {
     "connect-busboy": "0.0.2",
     "ejs": "^2.6.2",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "express-fileupload": "^1.1.5",
     "las-js": "^2.0.0",
     "mongodb": "^3.2.7",
